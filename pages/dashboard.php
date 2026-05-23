@@ -1,0 +1,152 @@
+<?php
+require_once '../php/config.php';
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+$nom = $_SESSION['nom'];
+$prenom = $_SESSION['prenom'];
+$role = $_SESSION['role'];
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord - EduRessources</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">📚 EduRessources</div>
+        <nav>
+            <a href="../index.html">Accueil</a>
+            <a href="ressources.php">Ressources</a>
+            <a href="dashboard.php" class="active">Tableau de bord</a>
+            <a href="../php/logout.php">Déconnexion</a>
+        </nav>
+    </header>
+
+    <section class="dashboard-header">
+        <div class="welcome-section">
+            <h1>Bonjour, <?php echo htmlspecialchars($prenom); ?> <?php echo htmlspecialchars($nom); ?> !</h1>
+            <p class="role-badge"><?php echo $role === 'enseignant' ? '👨‍🏫 Enseignant' : '👨‍🎓 Étudiant'; ?></p>
+        </div>
+    </section>
+
+    <?php if ($role === 'enseignant'): ?>
+    
+    <!-- DASHBOARD ENSEIGNANT -->
+    <section class="dashboard-content">
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📁</div>
+                <div class="stat-info">
+                    <h3>Mes Ressources</h3>
+                    <p class="stat-number" id="ressources-count">-</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-info">
+                    <h3>Total Vues</h3>
+                    <p class="stat-number" id="vues-count">-</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💬</div>
+                <div class="stat-info">
+                    <h3>Commentaires</h3>
+                    <p class="stat-number" id="commentaires-count">-</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-section">
+            <h2>Actions rapides</h2>
+            <div class="action-buttons">
+                <a href="../php/add_ressource.php" class="btn-action btn-primary">
+                    <span>➕</span> Ajouter une ressource
+                </a>
+                <a href="ressources.php?mes=true" class="btn-action btn-secondary">
+                    <span>📋</span> Gérer mes ressources
+                </a>
+            </div>
+        </div>
+
+        <div class="recent-section">
+            <h2>Mes ressources récentes</h2>
+            <div class="ressources-list" id="recent-ressources">
+                <p>Chargement...</p>
+            </div>
+        </div>
+
+    </section>
+
+    <?php else: ?>
+    
+    <!-- DASHBOARD ÉTUDIANT -->
+    <section class="dashboard-content">
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-info">
+                    <h3>Ressources consultées</h3>
+                    <p class="stat-number" id="consulted-count">-</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-info">
+                    <h3>Favoris</h3>
+                    <p class="stat-number" id="favoris-count">-</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-info">
+                    <h3>Quiz complétés</h3>
+                    <p class="stat-number" id="quiz-count">-</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-section">
+            <h2>Actions rapides</h2>
+            <div class="action-buttons">
+                <a href="ressources.php" class="btn-action btn-primary">
+                    <span>🔍</span> Explorer les ressources
+                </a>
+                <a href="ressources.php?favoris=true" class="btn-action btn-secondary">
+                    <span>⭐</span> Mes favoris
+                </a>
+            </div>
+        </div>
+
+        <div class="recent-section">
+            <h2>Ressources recommandées</h2>
+            <div class="ressources-list" id="recommended-ressources">
+                <p>Chargement...</p>
+            </div>
+        </div>
+
+    </section>
+
+    <?php endif; ?>
+
+    <footer>
+        <p>© 2025 EduRessources – Tous droits réservés</p>
+    </footer>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>
