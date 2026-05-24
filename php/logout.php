@@ -13,6 +13,6 @@ if (isset($_COOKIE[session_name()])) {
 session_destroy();
 
 // Rediriger vers la page d'accueil
-header("Location: ../index.html");
+header("Location: " . BASE_URL . "index.html");
 exit();
 ?>

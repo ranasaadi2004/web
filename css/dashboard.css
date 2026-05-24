@@ -133,6 +133,84 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
+.api-endpoints-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
+}
+
+.api-endpoints-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.api-endpoints-header h2 {
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.api-endpoints-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+.endpoint-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+}
+
+.endpoint-card {
+    background: #f8f9fa;
+    border: 1px solid #edf0f2;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.endpoint-card code {
+    display: block;
+    color: #2c3e50;
+    font-weight: 700;
+    margin: 10px 0 8px;
+}
+
+.endpoint-card p {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.method {
+    display: inline-block;
+    border-radius: 999px;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 10px;
+}
+
+.method.get {
+    background: #3498db;
+}
+
+.method.post {
+    background: #27ae60;
+}
+
+.method.put {
+    background: #f39c12;
+}
+
+.method.delete {
+    background: #e74c3c;
+}
+
 .recent-section h2 {
     font-size: 22px;
     color: #2c3e50;
@@ -234,5 +312,9 @@
     .btn-action {
         width: 100%;
         justify-content: center;
+    }
+
+    .api-endpoints-header {
+        flex-direction: column;
     }
 }

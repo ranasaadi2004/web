@@ -3,27 +3,44 @@ require_once 'config.php';
 
 // Vérifier si l'utilisateur est connecté et est un enseignant
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'enseignant') {
-    header("Location: ../pages/login.php");
+    header("Location: " . BASE_URL . "pages/login.php");
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
+$dashboard_url = '../pages/dashboard.php?' . http_build_query([
+    'nom' => $_SESSION['nom'],
+    'prenom' => $_SESSION['prenom'],
+    'role' => $_SESSION['role']
+]);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $titre = trim($_POST['titre']);
     $description = trim($_POST['description']);
-    $type = $_POST['type'];
+    $type_raw = $_POST['type'];
     $matiere = $_POST['matiere'];
     $niveau = $_POST['niveau'];
+    $visibilite = $_POST['visibilite'] ?? 'public';
+    $type_map = [
+        'pdf' => 'PDF',
+        'video' => 'vidéo',
+        'audio' => 'audio',
+        'lien' => 'lien',
+    ];
+    $type = $type_map[$type_raw] ?? '';
     
     // Validation
     if (empty($titre) || empty($description) || empty($type) || empty($matiere) || empty($niveau)) {
-        header("Location: ../pages/dashboard.php?error=empty_fields");
+        header("Location: ../php/add_ressource.php?error=empty_fields");
         exit();
     }
+
+    if (!in_array($visibilite, ['public', 'inscrit', 'privatif'], true)) {
+        $visibilite = 'public';
+    }
     
-    $fichier = '';
+    $url_fichier = '';
     
     // Gestion de l'upload de fichier
     if ($type !== 'lien' && isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
@@ -42,35 +59,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $file_type = $_FILES['fichier']['type'];
         
         if (!in_array($file_type, $allowed_types)) {
-            header("Location: ../pages/dashboard.php?error=invalid_file_type");
+            header("Location: ../php/add_ressource.php?error=invalid_file_type");
             exit();
         }
         
         // Vérifier la taille du fichier (max 50MB)
         if ($_FILES['fichier']['size'] > 50 * 1024 * 1024) {
-            header("Location: ../pages/dashboard.php?error=file_too_large");
+            header("Location: ../php/add_ressource.php?error=file_too_large");
             exit();
         }
         
         if (move_uploaded_file($_FILES['fichier']['tmp_name'], $file_path)) {
-            $fichier = 'uploads/' . $file_name;
+            $url_fichier = 'uploads/' . $file_name;
         } else {
-            header("Location: ../pages/dashboard.php?error=upload_failed");
+            header("Location: ../php/add_ressource.php?error=upload_failed");
             exit();
         }
     } elseif ($type === 'lien') {
-        $fichier = trim($_POST['lien_url']);
+        $url_fichier = trim($_POST['lien_url']);
+        if (empty($url_fichier) || !filter_var($url_fichier, FILTER_VALIDATE_URL)) {
+            header("Location: ../php/add_ressource.php?error=invalid_url");
+            exit();
+        }
+    } else {
+        header("Location: ../php/add_ressource.php?error=empty_fields");
+        exit();
     }
     
     // Insertion dans la base de données
-    $sql = "INSERT INTO ressources (titre, description, type, fichier, matiere, niveau, user_id, created_at) 
-            VALUES ('$titre', '$description', '$type', '$fichier', '$matiere', '$niveau', '$user_id', NOW())";
+    $sql = "INSERT INTO ressources (titre, description, type, URL_fichier, version, id_matiere, id_niveau, id_enseignant, visibilite, created_at) 
+            VALUES (?, ?, ?, ?, 1, ?, ?, ?, ?, NOW())";
+    $stmt = mysqli_prepare($conn, $sql);
     
-    if (mysqli_query($conn, $sql)) {
-        header("Location: ../pages/dashboard.php?success=ressource_added");
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, 'ssssssis', $titre, $description, $type, $url_fichier, $matiere, $niveau, $user_id, $visibilite);
+    }
+    
+    if ($stmt && mysqli_stmt_execute($stmt)) {
+        header("Location: " . $dashboard_url . "&success=ressource_added");
         exit();
     } else {
-        header("Location: ../pages/dashboard.php?error=db_error");
+        header("Location: ../php/add_ressource.php?error=db_error");
         exit();
     }
 }
@@ -90,9 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <header>
         <div class="logo">📚 EduRessources</div>
         <nav>
-            <a href="../index.html">Accueil</a>
+            <a href="<?php echo htmlspecialchars($dashboard_url); ?>">Tableau de bord</a>
             <a href="../pages/ressources.php">Ressources</a>
-            <a href="../pages/dashboard.php">Tableau de bord</a>
+            <a href="../php/add_ressource.php">Ajouter une ressource</a>
+            <a href="../pages/api-tester.php">Testeur d'API</a>
             <a href="../php/logout.php">Déconnexion</a>
         </nav>
     </header>
@@ -111,6 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'invalid_file_type' => 'Type de fichier non autorisé (PDF, MP4, MP3 uniquement)',
                     'file_too_large' => 'Le fichier dépasse 50MB',
                     'upload_failed' => 'Erreur lors de l\'upload du fichier',
+                    'invalid_url' => 'URL invalide pour le lien',
                     'db_error' => 'Erreur lors de l\'enregistrement'
                 ];
                 $error = $_GET['error'];
@@ -181,10 +212,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label>Visibilité</label>
+                    <select name="visibilite" required>
+                        <option value="public">Public</option>
+                        <option value="inscrit">Réservé aux inscrits</option>
+                        <option value="privatif">Privatif</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn-auth">Ajouter la ressource</button>
 
                 <p class="auth-link">
-                    <a href="../pages/dashboard.php">Annuler</a>
+                    <a href="<?php echo htmlspecialchars($dashboard_url); ?>">Annuler</a>
                 </p>
 
             </form>

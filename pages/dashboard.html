@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirection vers le tableau de bord</title>
+    <script>
+        window.location.replace('dashboard.php' + window.location.search);
+    </script>
+</head>
+<body>
+    <p>Redirection vers <a id="dashboard-link" href="dashboard.php">le tableau de bord</a>...</p>
+    <script>
+        document.getElementById('dashboard-link').href = 'dashboard.php' + window.location.search;
+    </script>
+</body>
+</html>

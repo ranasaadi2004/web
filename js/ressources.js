@@ -69,7 +69,9 @@ function displayRessources(ressources) {
 function getTypeIcon(type) {
     const icons = {
         'pdf': '📄',
+        'PDF': '📄',
         'video': '🎥',
+        'vidéo': '🎥',
         'audio': '🎵',
         'lien': '🔗'
     };

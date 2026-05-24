@@ -1,5 +1,17 @@
 <?php
 require_once '../php/config.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: " . BASE_URL . "pages/login.php");
+    exit();
+}
+
+$role = $_SESSION['role'];
+$dashboard_url = 'dashboard.php?' . http_build_query([
+    'nom' => $_SESSION['nom'],
+    'prenom' => $_SESSION['prenom'],
+    'role' => $_SESSION['role']
+]);
 ?>
 
 <!DOCTYPE html>
@@ -16,21 +28,19 @@ require_once '../php/config.php';
     <header>
         <div class="logo">📚 EduRessources</div>
         <nav>
-            <a href="../index.html">Accueil</a>
             <a href="ressources.php" class="active">Ressources</a>
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="dashboard.php">Tableau de bord</a>
-                <a href="../php/logout.php">Déconnexion</a>
-            <?php else: ?>
-                <a href="login.php">Connexion</a>
-                <a href="register.php">Inscription</a>
+            <a href="<?php echo htmlspecialchars($dashboard_url); ?>">Tableau de bord</a>
+            <?php if ($role === 'enseignant'): ?>
+                <a href="../php/add_ressource.php">Ajouter une ressource</a>
+                <a href="api-tester.php">Testeur d'API</a>
             <?php endif; ?>
+            <a href="../php/logout.php">Déconnexion</a>
         </nav>
     </header>
 
     <section class="hero-ressources">
         <h1>Bibliothèque de ressources pédagogiques</h1>
-        <p>Explorez les ressources partagées par nos enseignants</p>
+        <p><?php echo $role === 'enseignant' ? 'Consultez et gérez les ressources pédagogiques.' : 'Explorez les ressources partagées par les enseignants.'; ?></p>
     </section>
 
     <section class="search-section">

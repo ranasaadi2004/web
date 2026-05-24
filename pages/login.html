@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirection vers la connexion</title>
+    <script>
+        window.location.replace('login.php' + window.location.search);
+    </script>
+</head>
+<body>
+    <p>Redirection vers <a id="login-link" href="login.php">la page de connexion</a>...</p>
+    <script>
+        document.getElementById('login-link').href = 'login.php' + window.location.search;
+    </script>
+</body>
+</html>

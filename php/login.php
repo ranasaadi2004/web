@@ -8,13 +8,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validation des champs
     if (empty($email) || empty($password)) {
-        header("Location: ../pages/login.html?error=empty_fields");
+        header("Location: " . BASE_URL . "pages/login.php?error=empty_fields");
         exit();
     }
 
-    // Recherche de l'utilisateur
-    $sql = "SELECT * FROM users WHERE email='$email'";
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ?");
+    mysqli_stmt_bind_param($stmt, 's', $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) === 1) {
         $user = mysqli_fetch_assoc($result);
@@ -28,19 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['email'] = $user['email'];
             $_SESSION['role'] = $user['role'];
 
-            // Redirection selon le rôle
-            if ($user['role'] === 'enseignant') {
-                header("Location: ../pages/dashboard.html");
-            } else {
-                header("Location: ../pages/dashboard.html");
-            }
+            $params = http_build_query([
+                'nom' => $user['nom'],
+                'prenom' => $user['prenom'],
+                'role' => $user['role']
+            ]);
+
+            header("Location: " . BASE_URL . "pages/dashboard.php?" . $params);
             exit();
         } else {
-            header("Location: ../pages/login.html?error=invalid_credentials");
+            header("Location: " . BASE_URL . "pages/login.php?error=invalid_credentials");
             exit();
         }
     } else {
-        header("Location: ../pages/login.html?error=invalid_credentials");
+        header("Location: " . BASE_URL . "pages/login.php?error=invalid_credentials");
         exit();
     }
 }

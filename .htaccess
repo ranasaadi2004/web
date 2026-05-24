@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Route REST API requests for resources to api/resources.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^api/resources(/(.*))?$ api/resources.php?id=$2 [QSA,L]
+    
+    # Redirect login.html and register.html to login.php and register.php
+    RewriteRule ^pages/login\.html$ pages/login.php [NC,L,R=301]
+    RewriteRule ^pages/register\.html$ pages/register.php [NC,L,R=301]
+</IfModule>

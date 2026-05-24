@@ -17,13 +17,12 @@ if ($action === 'stats') {
     
     if ($role === 'enseignant') {
         // Statistiques enseignant
-        $ressources_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM ressources WHERE user_id='$user_id'");
+        $ressources_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM ressources WHERE id_enseignant='$user_id'");
         $ressources_count = mysqli_fetch_assoc($ressources_query)['count'];
         
-        // Simuler les vues et commentaires (à implémenter avec des tables appropriées)
+        // Simuler les vues et commentaires (tables dédiées non créées dans le schéma actuel)
         $vues_count = 0;
-        $commentaires_query = mysqli_query($conn, "SELECT COUNT(*) as count FROM commentaires c JOIN ressources r ON c.ressource_id = r.id WHERE r.user_id='$user_id'");
-        $commentaires_count = mysqli_fetch_assoc($commentaires_query)['count'];
+        $commentaires_count = 0;
         
         echo json_encode([
             'ressources' => $ressources_count,
@@ -44,7 +43,7 @@ if ($action === 'stats') {
 } elseif ($action === 'recent_ressources') {
     
     if ($role === 'enseignant') {
-        $query = "SELECT id, titre, matiere, type, created_at FROM ressources WHERE user_id='$user_id' ORDER BY created_at DESC LIMIT 5";
+        $query = "SELECT id, titre, id_matiere, type, created_at FROM ressources WHERE id_enseignant='$user_id' ORDER BY created_at DESC LIMIT 5";
         $result = mysqli_query($conn, $query);
         
         $ressources = [];
@@ -52,7 +51,7 @@ if ($action === 'stats') {
             $ressources[] = [
                 'id' => $row['id'],
                 'titre' => $row['titre'],
-                'matiere' => $row['matiere'],
+                'matiere' => $row['id_matiere'],
                 'type' => $row['type'],
                 'date' => date('Y-m-d', strtotime($row['created_at']))
             ];
@@ -65,7 +64,7 @@ if ($action === 'stats') {
     
     if ($role === 'etudiant') {
         // Ressources récentes de tous les enseignants
-        $query = "SELECT r.id, r.titre, r.matiere, r.type, u.nom as auteur FROM ressources r JOIN users u ON r.user_id = u.id ORDER BY r.created_at DESC LIMIT 5";
+        $query = "SELECT r.id, r.titre, r.id_matiere, r.type, u.nom as auteur FROM ressources r JOIN users u ON r.id_enseignant = u.id WHERE r.visibilite IN ('public', 'inscrit') ORDER BY r.created_at DESC LIMIT 5";
         $result = mysqli_query($conn, $query);
         
         $ressources = [];
@@ -73,7 +72,7 @@ if ($action === 'stats') {
             $ressources[] = [
                 'id' => $row['id'],
                 'titre' => $row['titre'],
-                'matiere' => $row['matiere'],
+                'matiere' => $row['id_matiere'],
                 'type' => $row['type'],
                 'auteur' => 'Prof. ' . $row['auteur']
             ];

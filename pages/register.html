@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirection vers l'inscription</title>
+    <script>
+        window.location.replace('register.php' + window.location.search);
+    </script>
+</head>
+<body>
+    <p>Redirection vers <a id="register-link" href="register.php">la page d'inscription</a>...</p>
+    <script>
+        document.getElementById('register-link').href = 'register.php' + window.location.search;
+    </script>
+</body>
+</html>

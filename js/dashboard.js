@@ -11,84 +11,110 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadTeacherStats() {
-    // Simuler les statistiques (à remplacer par un appel AJAX réel)
-    setTimeout(() => {
-        document.getElementById('ressources-count').textContent = '12';
-        document.getElementById('vues-count').textContent = '348';
-        document.getElementById('commentaires-count').textContent = '45';
-    }, 500);
+    fetch('../php/dashboard.php?action=stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ressources-count').textContent = data.ressources ?? 0;
+            document.getElementById('vues-count').textContent = data.vues ?? 0;
+            document.getElementById('commentaires-count').textContent = data.commentaires ?? 0;
+        })
+        .catch(() => {
+            document.getElementById('ressources-count').textContent = '0';
+            document.getElementById('vues-count').textContent = '0';
+            document.getElementById('commentaires-count').textContent = '0';
+        });
 }
 
 function loadStudentStats() {
-    // Simuler les statistiques (à remplacer par un appel AJAX réel)
-    setTimeout(() => {
-        document.getElementById('consulted-count').textContent = '28';
-        document.getElementById('favoris-count').textContent = '8';
-        document.getElementById('quiz-count').textContent = '15';
-    }, 500);
+    fetch('../php/dashboard.php?action=stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('consulted-count').textContent = data.consulted ?? 0;
+            document.getElementById('favoris-count').textContent = data.favoris ?? 0;
+            document.getElementById('quiz-count').textContent = data.quiz ?? 0;
+        })
+        .catch(() => {
+            document.getElementById('consulted-count').textContent = '0';
+            document.getElementById('favoris-count').textContent = '0';
+            document.getElementById('quiz-count').textContent = '0';
+        });
 }
 
 function loadRecentRessources() {
-    // Simuler le chargement des ressources récentes (à remplacer par un appel AJAX réel)
-    const ressources = [
-        { titre: 'Introduction aux équations différentielles', matiere: 'Mathématiques', type: 'PDF', date: '2025-05-20' },
-        { titre: 'La Révolution française', matiere: 'Histoire', type: 'Vidéo', date: '2025-05-18' },
-        { titre: 'Exercices de grammaire', matiere: 'Français', type: 'PDF', date: '2025-05-15' }
-    ];
-    
-    const container = document.getElementById('recent-ressources');
-    container.innerHTML = ressources.map(r => `
-        <div class="ressource-item">
-            <div class="ressource-icon">${getTypeIcon(r.type)}</div>
-            <div class="ressource-info">
-                <h4>${r.titre}</h4>
-                <p>${r.matiere}</p>
-                <div class="ressource-meta">
-                    <span>📅 ${r.date}</span>
-                    <span>📄 ${r.type}</span>
+    fetch('../php/dashboard.php?action=recent_ressources')
+        .then(response => response.json())
+        .then(ressources => {
+            const container = document.getElementById('recent-ressources');
+            if (!Array.isArray(ressources) || ressources.length === 0) {
+                container.innerHTML = '<p>Aucune ressource ajoutée pour le moment.</p>';
+                return;
+            }
+
+            container.innerHTML = ressources.map(r => `
+                <div class="ressource-item">
+                    <div class="ressource-icon">${getTypeIcon(r.type)}</div>
+                    <div class="ressource-info">
+                        <h4>${r.titre}</h4>
+                        <p>${r.matiere}</p>
+                        <div class="ressource-meta">
+                            <span>📅 ${r.date}</span>
+                            <span>📄 ${r.type}</span>
+                        </div>
+                    </div>
+                    <div class="ressource-actions">
+                        <a href="api-tester.php" class="btn-small btn-edit">Versionner</a>
+                        <a href="api-tester.php" class="btn-small btn-delete">Supprimer</a>
+                    </div>
                 </div>
-            </div>
-            <div class="ressource-actions">
-                <a href="#" class="btn-small btn-edit">Modifier</a>
-                <a href="#" class="btn-small btn-delete">Supprimer</a>
-            </div>
-        </div>
-    `).join('');
+            `).join('');
+        })
+        .catch(() => {
+            document.getElementById('recent-ressources').innerHTML = '<p>Erreur lors du chargement des ressources.</p>';
+        });
 }
 
 function loadRecommendedRessources() {
-    // Simuler le chargement des ressources recommandées (à remplacer par un appel AJAX réel)
-    const ressources = [
-        { titre: 'Les bases de la chimie organique', matiere: 'Chimie', type: 'PDF', auteur: 'Prof. Martin' },
-        { titre: 'Introduction à la physique quantique', matiere: 'Physique', type: 'Vidéo', auteur: 'Prof. Dupont' },
-        { titre: 'Grammaire anglaise avancée', matiere: 'Anglais', type: 'PDF', auteur: 'Prof. Smith' }
-    ];
-    
-    const container = document.getElementById('recommended-ressources');
-    container.innerHTML = ressources.map(r => `
-        <div class="ressource-item">
-            <div class="ressource-icon">${getTypeIcon(r.type)}</div>
-            <div class="ressource-info">
-                <h4>${r.titre}</h4>
-                <p>${r.matiere} • ${r.auteur}</p>
-                <div class="ressource-meta">
-                    <span>📄 ${r.type}</span>
+    fetch('../php/dashboard.php?action=recommended_ressources')
+        .then(response => response.json())
+        .then(ressources => {
+            const container = document.getElementById('recommended-ressources');
+            if (!Array.isArray(ressources) || ressources.length === 0) {
+                container.innerHTML = '<p>Aucune ressource recommandée pour le moment.</p>';
+                return;
+            }
+
+            container.innerHTML = ressources.map(r => `
+                <div class="ressource-item">
+                    <div class="ressource-icon">${getTypeIcon(r.type)}</div>
+                    <div class="ressource-info">
+                        <h4>${r.titre}</h4>
+                        <p>${r.matiere} • ${r.auteur}</p>
+                        <div class="ressource-meta">
+                            <span>📄 ${r.type}</span>
+                        </div>
+                    </div>
+                    <div class="ressource-actions">
+                        <a href="ressources.php" class="btn-small btn-edit">Voir</a>
+                    </div>
                 </div>
-            </div>
-            <div class="ressource-actions">
-                <a href="#" class="btn-small btn-edit">Voir</a>
-                <a href="#" class="btn-small btn-delete">⭐</a>
-            </div>
-        </div>
-    `).join('');
+            `).join('');
+        })
+        .catch(() => {
+            document.getElementById('recommended-ressources').innerHTML = '<p>Erreur lors du chargement des ressources.</p>';
+        });
 }
 
 function getTypeIcon(type) {
     const icons = {
         'PDF': '📄',
+        'pdf': '📄',
         'Vidéo': '🎥',
+        'vidéo': '🎥',
+        'video': '🎥',
         'Audio': '🎵',
-        'Lien': '🔗'
+        'audio': '🎵',
+        'Lien': '🔗',
+        'lien': '🔗'
     };
     return icons[type] || '📁';
 }

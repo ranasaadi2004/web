@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduShare – Inscription</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: #3498db;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .register-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .register-container h2 {
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+      color: #2c3e50;
+    }
+
+    .register-container p.subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #444;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 1.5px solid #dde1e7;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      background: #fafafa;
+      color: #333;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
+      background: white;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper input {
+      padding-right: 2.8rem;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #999;
+      line-height: 1;
+    }
+
+    .toggle-password:hover {
+      color: #3498db;
+    }
+
+    .password-hint {
+      font-size: 0.78rem;
+      color: #999;
+      margin-top: 0.3rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: #3498db;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-group label {
+      font-size: 0.85rem;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .checkbox-group label a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .checkbox-group label a:hover {
+      text-decoration: underline;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.8rem;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-submit:hover {
+      background: #2980b9;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    .divider {
+      text-align: center;
+      margin: 1.2rem 0;
+      position: relative;
+      color: #aaa;
+      font-size: 0.85rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #e0e0e0;
+    }
+
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .login-link {
+      text-align: center;
+      font-size: 0.88rem;
+      color: #666;
+    }
+
+    .login-link a {
+      color: #3498db;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Error & success messages */
+    .msg {
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+      display: none;
+    }
+
+    .msg.error {
+      background: #fdecea;
+      color: #c0392b;
+      border: 1px solid #f5c6c2;
+    }
+
+    .msg.success {
+      background: #eafaf1;
+      color: #1e8449;
+      border: 1px solid #a9dfbf;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #2c3e50;
+      color: #ccc;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">📚 EduShare</div>
+    <nav>
+      <a href="../index.html">Accueil</a>
+      <a href="ressources.php">Ressources</a>
+      <a href="login.php">Connexion</a>
+      <a href="register.php">Inscription</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="register-container">
+      <h2>📝 Créer un compte</h2>
+      <p class="subtitle">Rejoignez la communauté EduShare</p>
+
+      <div class="msg error" id="error-msg">Veuillez remplir tous les champs correctement.</div>
+      <div class="msg success" id="success-msg">Compte créé avec succès ! Redirection...</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required>
+        </div>
+        <div class="form-group">
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" name="nom" placeholder="Votre nom" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Adresse e-mail</label>
+        <input type="email" id="email" name="email" placeholder="exemple@email.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="role">Je suis</label>
+        <select id="role" name="role">
+          <option value="">-- Choisir un rôle --</option>
+          <option value="etudiant">Étudiant</option>
+          <option value="enseignant">Enseignant</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" placeholder="Minimum 8 caractères" required>
+          <button type="button" class="toggle-password" onclick="togglePwd('password', this)">👁️</button>
+        </div>
+        <div class="password-hint">Au moins 8 caractères</div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm-password">Confirmer le mot de passe</label>
+        <div class="password-wrapper">
+          <input type="password" id="confirm-password" name="confirm_password" placeholder="Répétez le mot de passe" required>
+          <button type="button" class="toggle-password" onclick="togglePwd('confirm-password', this)">👁️</button>
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms" name="terms">
+        <label for="terms">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></label>
+      </div>
+
+      <button class="btn-submit" onclick="handleRegister()">S'inscrire</button>
+
+      <div class="divider">ou</div>
+
+      <div class="login-link">
+        Déjà inscrit ? <a href="login.php">Se connecter</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 EduShare – Tous droits réservés</p>
+  </footer>
+
+  <script>
+    function togglePwd(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    function handleRegister() {
+      const prenom = document.getElementById('prenom').value.trim();
+      const nom = document.getElementById('nom').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const role = document.getElementById('role').value;
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm-password').value;
+      const terms = document.getElementById('terms').checked;
+
+      const errorMsg = document.getElementById('error-msg');
+      const successMsg = document.getElementById('success-msg');
+      errorMsg.style.display = 'none';
+      successMsg.style.display = 'none';
+
+      if (!prenom || !nom || !email || !role || !password || !confirm) {
+        errorMsg.textContent = 'Veuillez remplir tous les champs.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        errorMsg.textContent = 'Adresse e-mail invalide.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      if (password.length < 8) {
+        errorMsg.textContent = 'Le mot de passe doit contenir au moins 8 caractères.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      if (password !== confirm) {
+        errorMsg.textContent = 'Les mots de passe ne correspondent pas.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      if (!terms) {
+        errorMsg.textContent = 'Vous devez accepter les conditions d\'utilisation.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      successMsg.style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>

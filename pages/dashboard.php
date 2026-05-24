@@ -8,9 +8,20 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$nom = $_SESSION['nom'];
-$prenom = $_SESSION['prenom'];
+$nom = $_GET['nom'] ?? $_SESSION['nom'];
+$prenom = $_GET['prenom'] ?? $_SESSION['prenom'];
 $role = $_SESSION['role'];
+
+if ($nom !== $_SESSION['nom'] || $prenom !== $_SESSION['prenom']) {
+    $nom = $_SESSION['nom'];
+    $prenom = $_SESSION['prenom'];
+}
+
+$dashboard_url = 'dashboard.php?' . http_build_query([
+    'nom' => $_SESSION['nom'],
+    'prenom' => $_SESSION['prenom'],
+    'role' => $_SESSION['role']
+]);
 ?>
 
 <!DOCTYPE html>
@@ -27,9 +38,12 @@ $role = $_SESSION['role'];
     <header>
         <div class="logo">📚 EduRessources</div>
         <nav>
-            <a href="../index.html">Accueil</a>
+            <a href="<?php echo htmlspecialchars($dashboard_url); ?>" class="active">Tableau de bord</a>
             <a href="ressources.php">Ressources</a>
-            <a href="dashboard.php" class="active">Tableau de bord</a>
+            <?php if ($role === 'enseignant'): ?>
+                <a href="../php/add_ressource.php">Ajouter une ressource</a>
+                <a href="api-tester.php">Testeur d'API</a>
+            <?php endif; ?>
             <a href="../php/logout.php">Déconnexion</a>
         </nav>
     </header>
@@ -79,6 +93,47 @@ $role = $_SESSION['role'];
                 <a href="ressources.php?mes=true" class="btn-action btn-secondary">
                     <span>📋</span> Gérer mes ressources
                 </a>
+                <a href="api-tester.php" class="btn-action btn-secondary">
+                    <span>🧪</span> Tester les endpoints API
+                </a>
+            </div>
+        </div>
+
+        <div class="api-endpoints-section">
+            <div class="api-endpoints-header">
+                <div>
+                    <h2>Endpoints API des ressources</h2>
+                    <p>Ces routes permettent de déposer, consulter, versionner et supprimer les ressources pédagogiques.</p>
+                </div>
+                <a href="api-tester.php" class="btn-small btn-edit">Ouvrir le testeur</a>
+            </div>
+
+            <div class="endpoint-grid">
+                <div class="endpoint-card">
+                    <span class="method post">POST</span>
+                    <code>/api/resources</code>
+                    <p>Déposer une nouvelle ressource avec fichier ou lien.</p>
+                </div>
+                <div class="endpoint-card">
+                    <span class="method get">GET</span>
+                    <code>/api/resources</code>
+                    <p>Récupérer toutes les ressources, avec filtres par matière et niveau.</p>
+                </div>
+                <div class="endpoint-card">
+                    <span class="method get">GET</span>
+                    <code>/api/resources/{id}</code>
+                    <p>Voir le détail complet d'une ressource.</p>
+                </div>
+                <div class="endpoint-card">
+                    <span class="method put">PUT</span>
+                    <code>/api/resources/{id}/version</code>
+                    <p>Mettre à jour une ressource et incrémenter sa version.</p>
+                </div>
+                <div class="endpoint-card">
+                    <span class="method delete">DELETE</span>
+                    <code>/api/resources/{id}</code>
+                    <p>Supprimer une ressource. Réservé à son auteur.</p>
+                </div>
             </div>
         </div>
 
